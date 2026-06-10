@@ -1,7 +1,7 @@
 # TRACTION
 Telemetry-based Real-time Automotive Condition Tracking, Intelligence, Optimization &amp; Navigation
 
-# 🚗 Vehicle Intelligence Assistant
+# Vehicle Intelligence Assistant
 ### An ML-powered co-pilot for Indian mid-range car drivers
 
 ---
