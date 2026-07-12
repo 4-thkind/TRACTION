@@ -1,100 +1,86 @@
-# TRACTION
-Telemetry-based Real-time Automotive Condition Tracking, Intelligence, Optimization &amp; Navigation
+# 🏎️ TRACTION
+> **T**elemetry-based **R**eal-time **A**utomotive **C**ondition **T**racking, **I**ntelligence, **O**ptimization & **N**avigation
 
-# Vehicle Intelligence Assistant
-### An ML-powered co-pilot for Indian mid-range car drivers
+### An ML-Powered Co-Pilot for Indian Mid-Range Car Drivers
 
----
-
-## What This Does
-Translates raw vehicle sensor data into plain, actionable advice for everyday drivers —
-covering fuel, tyres, engine health, aerodynamics, drive modes, cabin air quality, and more.
+TRACTION is a vehicle intelligence assistant that translates raw telemetry and sensor data into actionable advice for everyday drivers. Instead of presenting raw metrics or cryptic error codes, the system processes data—such as E20 fuel degradation, aerodynamic drag, and tyre wear—and outputs straightforward recommendations to keep the vehicle running efficiently.
 
 ---
 
-## Project Structure
+## Key Features
 
-```
-vehicle_assistant/
-│
-├── config/
-│   └── schema.py           ← All sensor fields, units, healthy ranges, drive mode profiles
-│
-├── data/
-│   ├── generate_data.py    ← Synthetic Indian driving data generator
-│   ├── vehicle_data.csv    ← Generated dataset (10,800 readings / 180 sessions)
-│   └── sample_10.json      ← First 10 readings for quick inspection
-│
-├── models/                 ← (Phase 2) ML models go here
-│   ├── fuel_model.py
-│   ├── tyre_model.py
-│   ├── engine_model.py
-│   └── health_score.py
-│
-├── advisory/               ← (Phase 3) Plain-language advisory engine
-│   ├── rules.py
-│   └── llm_advisor.py
-│
-├── dashboard/              ← (Phase 4) Streamlit dashboard
-│   └── app.py
-│
-└── utils/
-    └── explorer.py         ← EDA / health flag analysis tool
-```
+- **Engine Health:** Real-time monitoring of coolant temperatures, load, and RPMs to detect overheating and cold-start inefficiencies.
+- **E20 Fuel Intelligence:** Tracks ethanol blend aging (hygroscopic moisture absorption) and advises on optimal refueling windows.
+- **Tyre & Aero Optimization:** Calculates aerodynamic drag based on vehicle speed and window positions. Monitors tread depth and pressure tailored specifically for Indian road conditions.
+- **Oil Life Tracking:** Predicts engine oil degradation using driven kilometers, oil age, and operating temperatures.
+- **Dashboard UI:** A responsive, dark-themed dashboard featuring real-time data updates and targeted driver insights.
 
 ---
 
-## Phase Status
+## Architecture & Tech Stack
 
-| Phase | What | Status |
-|-------|------|--------|
-| 1 | Data Schema + Synthetic Generator | ✅ Complete |
-| 2 | ML Models (fuel, tyres, engine, health) | 🔜 Next |
-| 3 | Advisory Language Layer | 🔜 Upcoming |
-| 4 | Dashboard + Calendar Sync | 🔜 Upcoming |
+TRACTION is built on a lightweight, high-performance web stack:
 
----
-
-## Dataset Overview
-
-- **10,800 readings** across 180 driving sessions (~6 months)
-- **47 sensor fields** per reading
-- Simulates realistic Indian driving: Gurugram/Delhi city, NH48 highway, expressway, off-road
-- Seasonal temperature and AQI variation (Delhi pollution season modelled)
-- Covers: city commutes, weekend highway runs, off-road sessions
-- Drive modes: eco, normal, sport, offroad
-
-### Key Sensor Groups
-| Group | Fields |
-|-------|--------|
-| Engine | rpm, temp, load, oil quality/age/km |
-| Fuel | level, type, instant/avg consumption, quality score |
-| Tyres | pressure x4, temperature, tread depth, total km |
-| Aerodynamics | windows x4, sunroof, mirror angles, drag score |
-| Environment | ambient temp, humidity, AQI, road type, traffic |
-| Cabin | cabin temp, AC state, filter age, recirculation |
-| Electrical | battery voltage, alternator output |
+- **Backend:** FastAPI (Python)
+- **Data Processing:** Pandas (handles telemetry processing and advisory logic)
+- **Frontend:** Vanilla HTML5, CSS3, and JavaScript
+- **Data Source:** Synthetic Indian driving dataset generator (10,800 readings across 180 sessions)
 
 ---
 
 ## Quick Start
 
+You can get the TRACTION dashboard running locally in a few steps.
+
+### 1. Prerequisites
+Ensure you have Python 3.8 or higher installed on your system.
+
 ```bash
-# 1. Install dependencies
-pip install pandas numpy scikit-learn
+# Clone the repository
+git clone https://github.com/4-thkind/TRACTION.git
+cd TRACTION
 
-# 2. Regenerate data (optional)
-python data/generate_data.py
+# Install required Python packages
+pip install fastapi "uvicorn[standard]" pandas numpy
+```
 
-# 3. Explore the data
-python utils/explorer.py
+### 2. Run the Server
+Launch the FastAPI backend server:
+
+```bash
+uvicorn api.main:app --reload
+```
+
+### 3. Open the Dashboard
+Navigate to [http://localhost:8000](http://localhost:8000) in your web browser. 
+
+> **Note:** The frontend automatically simulates a live vehicle data feed by polling the `/api/status` endpoint to update the dashboard in real-time.
+
+---
+
+## Project Structure
+
+```text
+TRACTION/
+├── api/
+│   ├── main.py             # FastAPI server and route definitions
+│   └── advisory.py         # Core business logic and health evaluation engine
+├── data/
+│   ├── generate_data.py    # Script to generate synthetic Indian driving data
+│   ├── vehicle_data.csv    # The generated telemetry dataset
+│   └── sample_10.json      # Fallback data sample
+├── utils/
+│   └── explorer.py         # CLI tool for Exploratory Data Analysis (EDA)
+├── TRACTION.html           # Main dashboard layout
+├── TRACTION.css            # Custom design system and styling
+└── TRACTION.js             # Frontend logic and API integration
 ```
 
 ---
 
 ## Design Principles
 
-- **Plain language first** — every ML output must translate to a sentence a non-mechanic understands
-- **Indian context** — AQI thresholds, fuel adulteration patterns, seasonal temps, traffic patterns
-- **Actionable** — every alert must include a recommended action, not just a warning number
-- **Non-alarmist** — distinguish between "fix today" and "keep an eye on this"
+1. **Plain Language First:** Every sensor reading is translated into a sentence a non-mechanic can immediately understand.
+2. **Indian Context:** The advisory engine is tuned for local conditions, including E20 fuel availability, monsoon tyre grip, AQI thresholds, and high ambient temperatures.
+3. **Actionable Insights:** Alerts include direct recommendations, such as "Roll up windows above 70km/h to reduce drag," rather than just reporting the drag coefficient.
+4. **Non-Alarmist:** The system distinguishes clearly between critical issues that require immediate attention and minor issues to keep an eye on.
